@@ -1,0 +1,21 @@
+{
+  "name": "own-shell",
+  "version": "1.0.0",
+  "description": "Build your own Unix-like shell in Node.js",
+  "author": "afrid.md",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx app/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
+  "bin": {
+    "own-shell": "dist/main.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
