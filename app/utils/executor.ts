@@ -35,6 +35,12 @@ const executeCommand = (
     return;
   }
 
+  if (command === "clear") {
+    process.stdout.write("\x1b[2J\x1b[H"); //ANSI escape codes to clear terminal
+    rl.prompt();
+    return;
+  }
+
   if (command === "echo") {
     writeOutputToFile(stdoutFile, stdoutMode, args.join(" "));
     rl.prompt();

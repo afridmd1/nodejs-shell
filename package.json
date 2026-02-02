@@ -1,5 +1,5 @@
 {
-  "name": "own-shell",
+  "name": "nodejs-shell",
   "version": "1.0.0",
   "description": "Build your own Unix-like shell in Node.js",
   "author": "afrid.md",
@@ -11,7 +11,7 @@
     "start": "node dist/main.js"
   },
   "bin": {
-    "own-shell": "dist/main.js"
+    "nodejs-shell": "dist/main.js"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

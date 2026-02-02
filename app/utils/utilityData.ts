@@ -1,5 +1,6 @@
 const builtIns = new Set<string>([
   "exit",
+  "clear",
   "echo",
   "type",
   "pwd",
