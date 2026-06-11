@@ -11,7 +11,7 @@ import {
 import { writeOutputToFile, writeErrorToFile } from "../../utils/redirector.js";
 
 function historyCommand(ctx: CommandContext) {
-  // handle -r flag to read history from file
+  //handle -r flag to read history from file
   if (ctx.args[0] === "-r") {
     const filePath = ctx.args[1] || "";
 
@@ -34,7 +34,7 @@ function historyCommand(ctx: CommandContext) {
     return;
   }
 
-  // handle -w flag to write history to file
+  //handle -w flag to write history to file
   if (ctx.args[0] === "-w") {
     const filePath = ctx.args[1] || "";
 
@@ -57,7 +57,7 @@ function historyCommand(ctx: CommandContext) {
     return;
   }
 
-  // handle -a flag to append history to file
+  //handle -a flag to append history to file
   if (ctx.args[0] === "-a") {
     const filePath = ctx.args[1] || "";
 
@@ -76,6 +76,17 @@ function historyCommand(ctx: CommandContext) {
       );
     }
 
+    ctx.rl.prompt();
+    return;
+  }
+
+  //handle invalid options
+  if (ctx.args[0]?.startsWith("-")) {
+    writeErrorToFile(
+      ctx.stderrFile,
+      ctx.stderrMode,
+      `history: ${ctx.args[0]}: invalid option`,
+    );
     ctx.rl.prompt();
     return;
   }

@@ -10,8 +10,10 @@ import {
   writeHistoryToFile,
 } from "./utils/history.js";
 import parseArguments from "./utils/argumentsParser.js";
+import { parseRedirection } from "./utils/redirectParser.js";
 import executeCommand from "./utils/executor.js";
 import autoCompleter from "./utils/autoCompleter.js";
+import { hasPipe } from "./utils/shellUtils.js";
 
 const rl: Interface = createInterface({
   input: process.stdin,
@@ -44,69 +46,31 @@ rl.on("line", (line: string = "") => {
   addToHistory(input);
 
   //pipeline handling
-  if (input.includes("|")) {
+  if (hasPipe(input)) {
     executePipeline(input, rl);
     return;
   }
 
-  const parts = parseArguments(input);
-  const command = parts[0];
-  const args = parts.slice(1);
-
-  //handle redirections
-  let stdoutFile: string | null = null;
-  let stdoutMode: "w" | "a" = "w";
-  let stderrFile: string | null = null;
-  let stderrMode: "w" | "a" = "w";
-
-  // stdout redirection
-  // append mode: >> or 1>>
-  let outAppendIndex = args.indexOf("1>>");
-  if (outAppendIndex === -1) outAppendIndex = args.indexOf(">>");
-
-  if (outAppendIndex !== -1) {
-    stdoutFile = args[outAppendIndex + 1];
-    stdoutMode = "a";
-    args.splice(outAppendIndex, 2);
+  const result = parseArguments(input);
+  if (!result.success) {
+    process.stderr.write(`syntax error: ${result.error}\n`);
+    rl.prompt();
+    return;
   }
-  // write mode: > or 1>
-  else {
-    let outWriteIndex = args.indexOf("1>");
-    if (outWriteIndex === -1) outWriteIndex = args.indexOf(">");
+  const tokens = result.args;
 
-    if (outWriteIndex !== -1) {
-      stdoutFile = args[outWriteIndex + 1];
-      stdoutMode = "w";
-      args.splice(outWriteIndex, 2);
-    }
-  }
-
-  // stderr redirection
-  // append mode: 2>>
-  let errAppendIndex = args.indexOf("2>>");
-  if (errAppendIndex !== -1) {
-    stderrFile = args[errAppendIndex + 1];
-    stderrMode = "a";
-    args.splice(errAppendIndex, 2);
-  }
-  // write mode: 2>
-  else {
-    let errWriteIndex = args.indexOf("2>");
-    if (errWriteIndex !== -1) {
-      stderrFile = args[errWriteIndex + 1];
-      stderrMode = "w";
-      args.splice(errWriteIndex, 2);
-    }
-  }
+  //handle redirection
+  const { args: allArgs, redirection } = parseRedirection(tokens);
+  const [command, ...args] = allArgs;
 
   executeCommand(
     rl,
     command,
     args,
-    stdoutFile,
-    stdoutMode,
-    stderrFile,
-    stderrMode,
+    redirection.stdout?.file || null,
+    redirection.stdout?.append ? "a" : "w",
+    redirection.stderr?.file || null,
+    redirection.stderr?.append ? "a" : "w",
   );
 });
 

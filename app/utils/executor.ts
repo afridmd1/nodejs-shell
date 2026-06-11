@@ -20,10 +20,8 @@ const executeCommand = (
   stderrFile: string | null,
   stderrMode: "w" | "a",
 ) => {
-  //ensure stderr file is writable/appedable always for builtins
-  if (stderrFile) {
-    fs.closeSync(fs.openSync(stderrFile, stderrMode));
-  }
+  if (stdoutFile) fs.closeSync(fs.openSync(stdoutFile, stdoutMode));
+  if (stderrFile) fs.closeSync(fs.openSync(stderrFile, stderrMode));
 
   const ctx = {
     rl,

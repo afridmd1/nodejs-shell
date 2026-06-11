@@ -1,7 +1,11 @@
 //utilities
 import { escapeCharacters } from "./utilityData.js";
 
-const parseArguments = (input: string): string[] => {
+type ParseResult =
+  | { success: true; args: string[] }
+  | { success: false; error: string };
+
+const parseArguments = (input: string): ParseResult => {
   const args: string[] = [];
   let currentArg = "",
     isSingleQuote = false,
@@ -62,7 +66,14 @@ const parseArguments = (input: string): string[] => {
 
   if (currentArg) args.push(currentArg);
 
-  return args;
+  //handle unclosed quotes by treating them as literal characters
+  if (isSingleQuote || isDoubleQuote) {
+    return {
+      success: false,
+      error: "unexpected EOF while looking for matching quote",
+    };
+  }
+  return { success: true, args };
 };
 
 export default parseArguments;

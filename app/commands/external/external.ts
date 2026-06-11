@@ -40,21 +40,9 @@ function runExternalCommand(ctx: CommandContext) {
       ctx.rl.prompt();
       return;
     }
-  } else {
-    try {
-      fs.accessSync(exePath, fs.constants.X_OK);
-    } catch {
-      writeErrorToFile(
-        ctx.stderrFile,
-        ctx.stderrMode,
-        `${ctx.command}: command not found`,
-      );
-      ctx.rl.prompt();
-      return;
-    }
   }
 
-  let stdio: any[] = ["inherit", "inherit", "inherit"];
+  let stdio: ("inherit" | number)[] = ["inherit", "inherit", "inherit"];
   let outFileDescriptor: number | null = null;
   let errFileDescriptor: number | null = null;
 
@@ -77,7 +65,7 @@ function runExternalCommand(ctx: CommandContext) {
     writeErrorToFile(
       ctx.stderrFile,
       ctx.stderrMode,
-      `Error executing command: ${err.message}`,
+      `error executing command: ${err.message}`,
     );
     ctx.rl.prompt();
   });
